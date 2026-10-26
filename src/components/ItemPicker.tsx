@@ -1,7 +1,7 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { ITEMS } from "../lib/rules";
-import { smooth } from "../ui/motion";
-import { colors, fonts, hovered } from "../ui/theme";
+import { Tap } from "../ui/motion";
+import { colors, fonts } from "../ui/theme";
 import { icons } from "./icons";
 
 export function ItemPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
@@ -10,19 +10,21 @@ export function ItemPicker({ value, onChange }: { value: string; onChange: (id: 
       {ITEMS.map((item) => {
         const on = item.id === value;
         return (
-          <Pressable
+          <Tap
             key={item.id}
             onPress={() => onChange(item.id)}
             accessibilityRole="radio"
             accessibilityState={{ checked: on }}
             accessibilityLabel={item.label}
-            style={(state) => [styles.cell, smooth, hovered(state) && styles.hover, state.pressed && styles.pressed, on && styles.on]}
+            style={[styles.cell, on && styles.on]}
+            hoverStyle={on ? styles.lift : styles.hover}
+            pressedStyle={styles.pressed}
           >
             <Image source={icons[item.id]} style={item.id === "shield" ? styles.shield : styles.icon} />
             <Text style={[styles.label, on && styles.labelOn]} numberOfLines={1}>
               {item.label}
             </Text>
-          </Pressable>
+          </Tap>
         );
       })}
     </View>
@@ -44,6 +46,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.panel,
   },
   hover: { borderColor: colors.faint, transform: [{ translateY: -2 }] },
+  lift: { transform: [{ translateY: -2 }] },
   pressed: { transform: [{ scale: 0.96 }] },
   on: { borderColor: colors.accent, backgroundColor: colors.raised },
   icon: { width: 32, height: 32 },

@@ -1,12 +1,12 @@
 import { useMemo, useRef, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { type Build, BUILDS, type Goal } from "../data/builds";
 import { solve } from "../lib/anvil";
 import { buildLink, shareLink } from "../lib/share";
 import { byId } from "../lib/data";
 import { type Enchant, fullName, type Item, ITEMS } from "../lib/rules";
-import { FadeIn, smooth } from "../ui/motion";
-import { colors, fonts, hovered, typeColor } from "../ui/theme";
+import { FadeIn, Tap } from "../ui/motion";
+import { colors, fonts, typeColor } from "../ui/theme";
 import { Footer } from "./Footer";
 import { icons } from "./icons";
 
@@ -40,7 +40,7 @@ export function BuildsPage({ onOpen }: { onOpen: (b: Build) => void }) {
       {item ? (
         <ItemBuilds key={item.id} item={item} onBack={() => show(null)} onOpen={onOpen} />
       ) : (
-        <FadeIn key="grid" distance={0}>
+        <FadeIn key="grid" rise={false}>
           <View style={styles.view}>
             <View style={styles.intro}>
               <Text style={styles.h1}>Best builds</Text>
@@ -51,15 +51,16 @@ export function BuildsPage({ onOpen }: { onOpen: (b: Build) => void }) {
             </View>
             <View style={styles.filters} accessibilityRole="radiogroup">
               {(["All", ...GOALS] as const).map((g) => (
-                <Pressable
+                <Tap
                   key={g}
                   onPress={() => setGoal(g)}
                   accessibilityRole="radio"
                   accessibilityState={{ checked: goal === g }}
-                  style={(s) => [styles.chip, smooth, hovered(s) && styles.chipHover, goal === g && styles.chipOn]}
+                  style={[styles.chip, goal === g && styles.chipOn]}
+                  hoverStyle={goal !== g && styles.chipHover}
                 >
                   <Text style={[styles.chipText, { color: g === "All" ? colors.text : goalColor[g] }]}>{g}</Text>
-                </Pressable>
+                </Tap>
               ))}
             </View>
             <ItemGrid goal={goal} onPick={show} />
@@ -81,11 +82,13 @@ function ItemGrid({ goal, onPick }: { goal: Goal | "All"; onPick: (id: string) =
         const count = BUILDS.filter((b) => b.item === item.id).length;
         return (
           <FadeIn key={`${item.id}-${goal}`} delay={Math.min(i, 14) * 28} style={[styles.tileWrap, { width: `${100 / columns}%` }]}>
-            <Pressable
+            <Tap
               onPress={() => onPick(item.id)}
               accessibilityRole="button"
               accessibilityLabel={`${item.label}: ${count} ${count === 1 ? "build" : "builds"}`}
-              style={(s) => [styles.tile, smooth, hovered(s) && styles.tileHover, s.pressed && styles.tilePressed]}
+              style={styles.tile}
+              hoverStyle={styles.tileHover}
+              pressedStyle={styles.tilePressed}
             >
               <Image source={icons[item.id]} style={item.id === "shield" ? styles.tileShield : styles.tileIcon} />
               <Text style={styles.tileName}>{item.label}</Text>
@@ -99,7 +102,7 @@ function ItemGrid({ goal, onPick }: { goal: Goal | "All"; onPick: (id: string) =
                   </Text>
                 ))}
               </View>
-            </Pressable>
+            </Tap>
           </FadeIn>
         );
       })}
@@ -111,11 +114,11 @@ function ItemBuilds({ item, onBack, onOpen }: { item: Item; onBack: () => void; 
   const builds = BUILDS.filter((b) => b.item === item.id);
   return (
     <View style={styles.view}>
-      <FadeIn distance={4}>
+      <FadeIn rise={false}>
         <View style={styles.detailHead}>
-          <Pressable onPress={onBack} accessibilityRole="button" style={(s) => [styles.back, smooth, hovered(s) && styles.backHover]}>
+          <Tap onPress={onBack} accessibilityRole="button" style={styles.back} hoverStyle={styles.backHover}>
             <Text style={styles.backText}>← All items</Text>
-          </Pressable>
+          </Tap>
           <View style={styles.detailTitle}>
             <Image source={icons[item.id]} style={item.id === "shield" ? styles.detailShield : styles.detailIcon} />
             <View style={styles.detailText}>
@@ -175,12 +178,12 @@ function BuildCard({ build: b, onOpen }: { build: Build; onOpen: () => void }) {
           </Text>
         )}
         <View style={styles.actions}>
-          <Pressable onPress={share} accessibilityRole="button" accessibilityLabel={`Copy a link to ${b.title}`} style={(s) => [styles.shareBtn, smooth, hovered(s) && styles.shareHover]}>
+          <Tap onPress={share} accessibilityRole="button" accessibilityLabel={`Copy a link to ${b.title}`} style={styles.shareBtn} hoverStyle={styles.shareHover}>
             <Text style={styles.shareText}>{shared ?? "Share"}</Text>
-          </Pressable>
-          <Pressable onPress={onOpen} accessibilityRole="button" style={(s) => [styles.open, smooth, hovered(s) && styles.openHover]}>
+          </Tap>
+          <Tap onPress={onOpen} accessibilityRole="button" style={styles.open} hoverStyle={styles.openHover}>
             <Text style={styles.openText}>Open in planner</Text>
-          </Pressable>
+          </Tap>
         </View>
       </View>
     </View>

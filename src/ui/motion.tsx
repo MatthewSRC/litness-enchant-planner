@@ -1,28 +1,82 @@
-import { type ReactNode, useEffect, useRef } from "react";
-import { AccessibilityInfo, Animated, Easing, Platform, type StyleProp, type ViewStyle } from "react-native";
+import { type ReactNode, useMemo, useState } from "react";
+import { Pressable, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import Animated, {
+  type CSSTransitionProperties,
+  Easing,
+  FadeIn as Fade,
+  FadeInDown,
+  ReduceMotion,
+  useReducedMotion,
+} from "react-native-reanimated";
 
-const web = Platform.OS === "web" && typeof window !== "undefined";
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-// Read once: on the web synchronously, so the first frame already knows.
-let reduceMotion = web && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-if (!web) AccessibilityInfo.isReduceMotionEnabled().then((v) => (reduceMotion = v), () => {});
+// Built-in presets only: on the web, Reanimated pins elements with a custom Keyframe entering
+// animation to `position: absolute` once it ends, which takes them out of the layout.
+const entry = (delay: number, rise: boolean) =>
+  (rise ? FadeInDown.duration(320) : Fade.duration(220))
+    .delay(delay)
+    .easing(Easing.out(Easing.cubic))
+    .reduceMotion(ReduceMotion.System);
 
-/** Fades its content in while it rises a few pixels. `delay` staggers lists. */
-export function FadeIn({ delay = 0, distance = 8, style, children }: { delay?: number; distance?: number; style?: StyleProp<ViewStyle>; children: ReactNode }) {
-  const t = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
-  useEffect(() => {
-    if (reduceMotion) return;
-    const run = Animated.timing(t, { toValue: 1, duration: 260, delay, easing: Easing.out(Easing.cubic), useNativeDriver: !web });
-    run.start();
-    return () => run.stop();
-  }, [t, delay]);
-  const translateY = t.interpolate({ inputRange: [0, 1], outputRange: [distance, 0] });
-  return <Animated.View style={[style, { opacity: t, transform: [{ translateY }] }]}>{children}</Animated.View>;
+/**
+ * Fades its content in when mounted, rising into place unless `rise` is false.
+ * Give it a new `key` to play it again; `delay` staggers lists. Off when the system asks for reduced motion.
+ */
+export function FadeIn({ delay = 0, rise = true, style, children }: { delay?: number; rise?: boolean; style?: StyleProp<ViewStyle>; children: ReactNode }) {
+  const entering = useMemo(() => entry(delay, rise), [delay, rise]);
+  return (
+    <Animated.View entering={entering} style={style}>
+      {children}
+    </Animated.View>
+  );
 }
 
-/** On the web, hover and press changes ease over 160 ms instead of snapping. react-native-web reads these CSS props. */
-export const smooth = (
-  web && !reduceMotion
-    ? { transitionProperty: "transform, background-color, border-color, opacity", transitionDuration: "160ms", transitionTimingFunction: "ease-out" }
-    : {}
-) as ViewStyle;
+// Reanimated CSS transition: style changes ease instead of snapping.
+const ease: CSSTransitionProperties<ViewStyle> = {
+  transitionProperty: ["transform", "backgroundColor", "borderColor", "opacity"],
+  transitionDuration: 160,
+  transitionTimingFunction: "ease-out",
+};
+
+type TapProps = Omit<PressableProps, "style" | "children"> & {
+  style?: StyleProp<ViewStyle>;
+  hoverStyle?: StyleProp<ViewStyle>;
+  pressedStyle?: StyleProp<ViewStyle>;
+  children?: ReactNode;
+};
+
+/** A Pressable whose hover and press styles ease in and out. */
+export function Tap({ style, hoverStyle, pressedStyle, onHoverIn, onHoverOut, onPressIn, onPressOut, ...rest }: TapProps) {
+  const [hover, setHover] = useState(false);
+  const [down, setDown] = useState(false);
+  const reduce = useReducedMotion();
+  return (
+    <AnimatedPressable
+      {...rest}
+      onHoverIn={(e) => {
+        setHover(true);
+        onHoverIn?.(e);
+      }}
+      onHoverOut={(e) => {
+        setHover(false);
+        onHoverOut?.(e);
+      }}
+      onPressIn={(e) => {
+        setDown(true);
+        onPressIn?.(e);
+      }}
+      onPressOut={(e) => {
+        setDown(false);
+        onPressOut?.(e);
+      }}
+      style={[style, !reduce && ease, hover && hoverStyle, down && pressedStyle]}
+    />
+  );
+}
+
+/** A View whose style changes ease, for state shown inside a Tap (a checkbox filling in). */
+export function Eased({ style, children }: { style?: StyleProp<ViewStyle>; children?: ReactNode }) {
+  const reduce = useReducedMotion();
+  return <Animated.View style={[style, !reduce && ease]}>{children}</Animated.View>;
+}

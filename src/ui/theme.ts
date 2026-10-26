@@ -1,4 +1,3 @@
-import type { PressableStateCallbackType } from "react-native";
 import type { EnchantType } from "../lib/rules";
 
 // Dark enchanting-table palette: purple-black panels like the in-game tooltip, XP green for costs.
@@ -46,6 +45,3 @@ export const typeLabel: Record<EnchantType, string> = {
   spell: "Spell",
   curse: "Curse",
 };
-
-/** react-native-web adds `hovered` to Pressable's state; the native types leave it out. */
-export const hovered = (state: PressableStateCallbackType) => !!(state as { hovered?: boolean }).hovered;

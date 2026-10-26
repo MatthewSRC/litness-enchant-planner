@@ -11,8 +11,8 @@ import { type Build, BUILDS } from "./src/data/builds";
 import { type Enchant, fits, ITEMS } from "./src/lib/rules";
 import { buildFromUrl, setBuildInUrl } from "./src/lib/share";
 import { SITE } from "./src/site";
-import { FadeIn, smooth } from "./src/ui/motion";
-import { colors, fonts, hovered } from "./src/ui/theme";
+import { FadeIn, Tap } from "./src/ui/motion";
+import { colors, fonts } from "./src/ui/theme";
 
 export default function App() {
   const wide = useWindowDimensions().width >= 980;
@@ -56,7 +56,7 @@ export default function App() {
     <View style={styles.header}>
       <Text style={styles.sub}>Pick an item and its enchantments. The planner finds the anvil order that costs the least XP.</Text>
       {shown && (
-        <FadeIn key={shown.id} distance={4}>
+        <FadeIn key={shown.id} rise={false}>
         <View style={styles.shown}>
           <Text style={styles.shownText}>
             Build: <Text style={styles.shownTitle}>{shown.title}</Text> <Text style={{ color: goalColor[shown.goal] }}>{shown.goal}</Text>
@@ -87,20 +87,21 @@ export default function App() {
           <Text style={styles.brand}>{SITE.name}</Text>
           <View style={styles.tabs} accessibilityRole="tablist">
             {(["planner", "builds"] as const).map((p) => (
-              <Pressable
+              <Tap
                 key={p}
                 onPress={() => setPage(p)}
                 accessibilityRole="tab"
                 accessibilityState={{ selected: page === p }}
-                style={(s) => [styles.tab, smooth, hovered(s) && page !== p && styles.tabHover, page === p && styles.tabOn]}
+                style={[styles.tab, page === p && styles.tabOn]}
+                hoverStyle={page !== p && styles.tabHover}
               >
                 <Text style={[styles.tabText, page === p && styles.tabTextOn]}>{p === "planner" ? "Planner" : "Best builds"}</Text>
-              </Pressable>
+              </Tap>
             ))}
           </View>
         </View>
       </View>
-      <FadeIn key={page} distance={0} style={styles.pageFade}>
+      <FadeIn key={page} rise={false} style={styles.pageFade}>
       {page === "builds" ? (
         <BuildsPage onOpen={openBuild} />
       ) : wide ? (

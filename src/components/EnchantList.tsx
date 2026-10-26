@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { ENCHANTS, LIMITS } from "../lib/data";
 import { blockReason, type Enchant, type EnchantType, fits, fullName, type Item } from "../lib/rules";
-import { smooth } from "../ui/motion";
-import { colors, fonts, hovered, rarityColor, typeColor, typeLabel } from "../ui/theme";
+import { Eased, Tap } from "../ui/motion";
+import { colors, fonts, rarityColor, typeColor, typeLabel } from "../ui/theme";
 import { icons } from "./icons";
 
 type Filter = "all" | EnchantType | "vanilla";
@@ -38,17 +38,18 @@ export function EnchantList({ item, picked, onToggle }: { item: Item; picked: En
       />
       <View style={styles.filters}>
         {FILTERS.map((f) => (
-          <Pressable
+          <Tap
             key={f}
             onPress={() => setFilter(f)}
             accessibilityRole="button"
             accessibilityState={{ selected: filter === f }}
-            style={[styles.chip, smooth, filter === f && styles.chipOn]}
+            style={[styles.chip, filter === f && styles.chipOn]}
+            hoverStyle={filter !== f && styles.chipHover}
           >
             <Text style={[styles.chipText, { color: f === "all" || f === "normal" ? colors.text : f === "vanilla" ? rarityColor.Vanilla : typeColor[f] }]}>
               {f === "all" ? "All" : f === "vanilla" ? "Vanilla" : typeLabel[f]}
             </Text>
-          </Pressable>
+          </Tap>
         ))}
         {item.id !== "book" && <Pressable
           onPress={() => setEverything((v) => !v)}
@@ -76,13 +77,14 @@ export function EnchantList({ item, picked, onToggle }: { item: Item; picked: En
 
 function Row({ enchant: e, on, reason, onPress }: { enchant: Enchant; on: boolean; reason: string | null; onPress: () => void }) {
   return (
-    <Pressable
+    <Tap
       onPress={onPress}
       disabled={!!reason}
       accessibilityRole="checkbox"
       accessibilityLabel={reason ? `${fullName(e)}: ${reason}` : fullName(e)}
       accessibilityState={{ checked: on, disabled: !!reason }}
-      style={(state) => [styles.row, smooth, hovered(state) && !reason && styles.rowHover, on && styles.rowOn, !!reason && styles.rowBlocked]}
+      style={[styles.row, on && styles.rowOn, !!reason && styles.rowBlocked]}
+      hoverStyle={!reason && !on && styles.rowHover}
     >
       <Image source={icons.book} style={styles.book} />
       <View style={styles.body}>
@@ -101,9 +103,9 @@ function Row({ enchant: e, on, reason, onPress }: { enchant: Enchant; on: boolea
       <View style={styles.side}>
         <Text style={styles.cost}>+{e.cost}</Text>
         <Text style={styles.costUnit}>levels</Text>
-        <View style={[styles.check, smooth, on && styles.checkOn]}>{on && <Text style={styles.tick}>✓</Text>}</View>
+        <Eased style={[styles.check, on && styles.checkOn]}>{on && <Text style={styles.tick}>✓</Text>}</Eased>
       </View>
-    </Pressable>
+    </Tap>
   );
 }
 
@@ -122,6 +124,7 @@ const styles = StyleSheet.create({
   },
   filters: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   chip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, borderWidth: 1, borderColor: colors.line },
+  chipHover: { borderColor: colors.faint },
   chipOn: { backgroundColor: colors.raised, borderColor: colors.accent },
   chipText: { fontFamily: fonts.pixel, fontSize: 13, color: colors.text },
   push: { marginLeft: "auto" },
