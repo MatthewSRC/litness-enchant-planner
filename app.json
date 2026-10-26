@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Litness Enchants Planner",
+    "slug": "litness-enchants-planner",
+    "version": "0.1.0",
+    "userInterfaceStyle": "dark",
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "name": "Litness Enchants Planner",
+      "favicon": "./assets/icons/book.png"
+    },
+    "plugins": [
+      "@apricotjs/react-native"
+    ]
+  }
+}

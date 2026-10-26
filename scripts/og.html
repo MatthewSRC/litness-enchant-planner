@@ -1,0 +1,57 @@
+<!doctype html>
+<!-- The link-preview banner. `npm run og` renders it to public/og.png at 1200x630. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=block" rel="stylesheet" />
+    <style>
+      * { margin: 0; box-sizing: border-box; }
+      html, body { width: 1200px; height: 630px; overflow: hidden; }
+      body {
+        background: radial-gradient(circle at 78% 50%, #2a1a52 0%, #15101f 45%, #0f0d14 75%);
+        color: #ece6f5;
+        font-family: "Pixelify Sans", monospace;
+        display: flex;
+        align-items: center;
+        padding: 0 72px;
+        position: relative;
+      }
+      body::after { content: ""; position: absolute; inset: 18px; border: 3px solid #4a2fa0; border-radius: 18px; pointer-events: none; }
+      .text { width: 640px; display: flex; flex-direction: column; gap: 22px; }
+      .eyebrow { font-size: 22px; letter-spacing: 3px; text-transform: uppercase; color: #a47cff; }
+      h1 { font-size: 92px; font-weight: 600; line-height: 0.98; }
+      p { font-family: system-ui, -apple-system, sans-serif; font-size: 27px; line-height: 1.35; color: #b5abc6; }
+      .by { font-size: 26px; color: #9a90ab; }
+      .by b { color: #8cff3c; font-weight: 400; }
+      .art { position: relative; flex: 1; height: 100%; }
+      .item { position: absolute; image-rendering: pixelated; }
+      .item img { width: 100%; height: 100%; image-rendering: pixelated; display: block; filter: drop-shadow(0 0 22px rgba(164, 124, 255, 0.55)); }
+      /* The enchantment glint, masked to the item's own pixels. */
+      .item::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url(../assets/glint.png) 0 0 / 70% repeat;
+        mix-blend-mode: screen;
+        opacity: 0.7;
+        -webkit-mask: var(--icon) 0 0 / 100% 100%;
+        image-rendering: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="text">
+      <div class="eyebrow">Minecraft · Custom enchants</div>
+      <h1>Litness Enchants Planner</h1>
+      <p>The cheapest anvil order for 157 enchantments, and the strongest PvP and PvE builds for every item.</p>
+      <div class="by">By <b>Souls__</b></div>
+    </div>
+    <div class="art">
+      <div class="item" style="--icon: url(../assets/icons/book.png); width: 260px; height: 260px; left: 120px; top: 185px"><img src="../assets/icons/book.png" /></div>
+      <div class="item" style="--icon: url(../assets/icons/sword.png); width: 170px; height: 170px; left: 20px; top: 40px; transform: rotate(-8deg)"><img src="../assets/icons/sword.png" /></div>
+      <div class="item" style="--icon: url(../assets/icons/bow.png); width: 150px; height: 150px; left: 270px; top: 60px"><img src="../assets/icons/bow.png" /></div>
+      <div class="item" style="--icon: url(../assets/icons/chestplate.png); width: 150px; height: 150px; left: 10px; top: 400px"><img src="../assets/icons/chestplate.png" /></div>
+      <div class="item" style="--icon: url(../assets/icons/pickaxe.png); width: 150px; height: 150px; left: 290px; top: 410px"><img src="../assets/icons/pickaxe.png" /></div>
+    </div>
+  </body>
+</html>

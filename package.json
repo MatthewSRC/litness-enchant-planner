@@ -1,0 +1,42 @@
+{
+  "name": "litness-enchants-planner",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start --web",
+    "export": "EXPO_PUBLIC_UPDATED=$(date +%F) expo export --platform web && node scripts/site-url.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts",
+    "sprites": "node scripts/sprites.mjs",
+    "dev": "expo start --port 8091",
+    "serve": "expo serve --port 8093",
+    "og": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --hide-scrollbars --allow-file-access-from-files --window-size=1200,630 --virtual-time-budget=5000 --screenshot=public/og.png \"file://$PWD/scripts/og.html\""
+  },
+  "dependencies": {
+    "@apricotjs/core": "0.1.0",
+    "@apricotjs/react-native": "0.1.0",
+    "@expo/metro-runtime": "~57.0.17",
+    "expo": "57.0.27",
+    "expo-asset": "57.0.19",
+    "expo-file-system": "57.0.7",
+    "expo-status-bar": "57.0.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-web": "0.21.3",
+    "react-native-webgpu": "0.12.1",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@apricotjs/metro": "0.1.0",
+    "@types/react": "19.2.18",
+    "@types/three": "0.186.0",
+    "@webgpu/types": "0.1.74",
+    "pngjs": "7.0.0",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

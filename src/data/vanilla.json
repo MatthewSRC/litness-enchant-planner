@@ -1,0 +1,651 @@
+{
+ "source": "Minecraft Java 26.3. cost = book multiplier x max level (books cost half the item multiplier, minimum 1)",
+ "enchants": [
+  {
+   "id": "protection",
+   "name": "Protection",
+   "maxLevel": 4,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Armor"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Fire Protection",
+    "Blast Protection",
+    "Projectile Protection"
+   ],
+   "description": "Reduces most damage, 4% per level",
+   "vanilla": true
+  },
+  {
+   "id": "fire-protection",
+   "name": "Fire Protection",
+   "maxLevel": 4,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Armor"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Protection",
+    "Blast Protection",
+    "Projectile Protection"
+   ],
+   "description": "Reduces fire damage and burn time",
+   "vanilla": true
+  },
+  {
+   "id": "blast-protection",
+   "name": "Blast Protection",
+   "maxLevel": 4,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 8,
+   "appliesTo": [
+    "Armor"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Protection",
+    "Fire Protection",
+    "Projectile Protection"
+   ],
+   "description": "Reduces explosion damage and knockback",
+   "vanilla": true
+  },
+  {
+   "id": "projectile-protection",
+   "name": "Projectile Protection",
+   "maxLevel": 4,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Armor"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Protection",
+    "Fire Protection",
+    "Blast Protection"
+   ],
+   "description": "Reduces arrow and other projectile damage",
+   "vanilla": true
+  },
+  {
+   "id": "feather-falling",
+   "name": "Feather Falling",
+   "maxLevel": 4,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Boots"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Reduces fall damage",
+   "vanilla": true
+  },
+  {
+   "id": "respiration",
+   "name": "Respiration",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 6,
+   "appliesTo": [
+    "Helmets"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Breathe longer underwater",
+   "vanilla": true
+  },
+  {
+   "id": "aqua-affinity",
+   "name": "Aqua Affinity",
+   "maxLevel": 1,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 2,
+   "appliesTo": [
+    "Helmets"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Mine at normal speed underwater",
+   "vanilla": true
+  },
+  {
+   "id": "thorns",
+   "name": "Thorns",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 12,
+   "appliesTo": [
+    "Armor"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Chance to damage attackers",
+   "vanilla": true
+  },
+  {
+   "id": "depth-strider",
+   "name": "Depth Strider",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 6,
+   "appliesTo": [
+    "Boots"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Frost Walker"
+   ],
+   "description": "Walk faster underwater",
+   "vanilla": true
+  },
+  {
+   "id": "frost-walker",
+   "name": "Frost Walker",
+   "maxLevel": 2,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Boots"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Depth Strider"
+   ],
+   "description": "Freezes water you walk over",
+   "vanilla": true
+  },
+  {
+   "id": "soul-speed",
+   "name": "Soul Speed",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 12,
+   "appliesTo": [
+    "Boots"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Faster on soul sand and soul soil",
+   "vanilla": true
+  },
+  {
+   "id": "swift-sneak",
+   "name": "Swift Sneak",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 12,
+   "appliesTo": [
+    "Leggings"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Move faster while sneaking",
+   "vanilla": true
+  },
+  {
+   "id": "sharpness",
+   "name": "Sharpness",
+   "maxLevel": 5,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 5,
+   "appliesTo": [
+    "Swords",
+    "Axes"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Smite",
+    "Bane of Arthropods"
+   ],
+   "description": "+3 melee damage at level V",
+   "vanilla": true
+  },
+  {
+   "id": "smite",
+   "name": "Smite",
+   "maxLevel": 5,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 5,
+   "appliesTo": [
+    "Swords",
+    "Axes"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Sharpness",
+    "Bane of Arthropods"
+   ],
+   "description": "+12.5 damage to undead mobs at level V",
+   "vanilla": true
+  },
+  {
+   "id": "bane-of-arthropods",
+   "name": "Bane of Arthropods",
+   "maxLevel": 5,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 5,
+   "appliesTo": [
+    "Swords",
+    "Axes"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Sharpness",
+    "Smite"
+   ],
+   "description": "+12.5 damage to spiders, bees and other arthropods at level V",
+   "vanilla": true
+  },
+  {
+   "id": "knockback",
+   "name": "Knockback",
+   "maxLevel": 2,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 2,
+   "appliesTo": [
+    "Swords"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Knocks targets further back",
+   "vanilla": true
+  },
+  {
+   "id": "fire-aspect",
+   "name": "Fire Aspect",
+   "maxLevel": 2,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Swords"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Sets the target on fire",
+   "vanilla": true
+  },
+  {
+   "id": "looting",
+   "name": "Looting",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 6,
+   "appliesTo": [
+    "Swords"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "More and rarer mob drops",
+   "vanilla": true
+  },
+  {
+   "id": "sweeping-edge",
+   "name": "Sweeping Edge",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 6,
+   "appliesTo": [
+    "Swords"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Stronger sweep attacks",
+   "vanilla": true
+  },
+  {
+   "id": "efficiency",
+   "name": "Efficiency",
+   "maxLevel": 5,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 5,
+   "appliesTo": [
+    "Pickaxes",
+    "Axes",
+    "Shovels",
+    "Hoes"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Mine faster",
+   "vanilla": true
+  },
+  {
+   "id": "silk-touch",
+   "name": "Silk Touch",
+   "maxLevel": 1,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Pickaxes",
+    "Axes",
+    "Shovels",
+    "Hoes"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Fortune"
+   ],
+   "description": "Blocks drop themselves",
+   "vanilla": true
+  },
+  {
+   "id": "fortune",
+   "name": "Fortune",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 6,
+   "appliesTo": [
+    "Pickaxes",
+    "Axes",
+    "Shovels",
+    "Hoes"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Silk Touch"
+   ],
+   "description": "More ore and crop drops",
+   "vanilla": true
+  },
+  {
+   "id": "power",
+   "name": "Power",
+   "maxLevel": 5,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 5,
+   "appliesTo": [
+    "Bows"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "+150% arrow damage at level V",
+   "vanilla": true
+  },
+  {
+   "id": "punch",
+   "name": "Punch",
+   "maxLevel": 2,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Bows"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Arrows knock targets back",
+   "vanilla": true
+  },
+  {
+   "id": "flame",
+   "name": "Flame",
+   "maxLevel": 1,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 2,
+   "appliesTo": [
+    "Bows"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Arrows set targets on fire",
+   "vanilla": true
+  },
+  {
+   "id": "infinity",
+   "name": "Infinity",
+   "maxLevel": 1,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Bows"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Mending"
+   ],
+   "description": "Shooting doesn't use up normal arrows",
+   "vanilla": true
+  },
+  {
+   "id": "luck-of-the-sea",
+   "name": "Luck of the Sea",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 6,
+   "appliesTo": [
+    "Fishing Rods"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Better fishing loot",
+   "vanilla": true
+  },
+  {
+   "id": "lure",
+   "name": "Lure",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 6,
+   "appliesTo": [
+    "Fishing Rods"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Fish bite sooner",
+   "vanilla": true
+  },
+  {
+   "id": "loyalty",
+   "name": "Loyalty",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 3,
+   "appliesTo": [
+    "Tridents"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Riptide"
+   ],
+   "description": "The trident flies back after a throw",
+   "vanilla": true
+  },
+  {
+   "id": "impaling",
+   "name": "Impaling",
+   "maxLevel": 5,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 10,
+   "appliesTo": [
+    "Tridents"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "+12.5 damage to aquatic mobs at level V",
+   "vanilla": true
+  },
+  {
+   "id": "riptide",
+   "name": "Riptide",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 6,
+   "appliesTo": [
+    "Tridents"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Loyalty",
+    "Channeling"
+   ],
+   "description": "Launches you when thrown in water or rain",
+   "vanilla": true
+  },
+  {
+   "id": "channeling",
+   "name": "Channeling",
+   "maxLevel": 1,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Tridents"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Riptide"
+   ],
+   "description": "Summons lightning on hit during thunderstorms",
+   "vanilla": true
+  },
+  {
+   "id": "multishot",
+   "name": "Multishot",
+   "maxLevel": 1,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 2,
+   "appliesTo": [
+    "Crossbows"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Piercing"
+   ],
+   "description": "Fires 3 arrows for the cost of 1",
+   "vanilla": true
+  },
+  {
+   "id": "quick-charge",
+   "name": "Quick Charge",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 3,
+   "appliesTo": [
+    "Crossbows"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Loads the crossbow faster",
+   "vanilla": true
+  },
+  {
+   "id": "piercing",
+   "name": "Piercing",
+   "maxLevel": 4,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Crossbows"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Multishot"
+   ],
+   "description": "Arrows pass through several targets",
+   "vanilla": true
+  },
+  {
+   "id": "unbreaking",
+   "name": "Unbreaking",
+   "maxLevel": 3,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 3,
+   "appliesTo": [
+    "All"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "The item loses durability less often",
+   "vanilla": true
+  },
+  {
+   "id": "mending",
+   "name": "Mending",
+   "maxLevel": 1,
+   "type": "normal",
+   "rarity": "Vanilla",
+   "cost": 2,
+   "appliesTo": [
+    "All"
+   ],
+   "requirements": [],
+   "conflicts": [
+    "Infinity"
+   ],
+   "description": "XP you pick up repairs the item",
+   "vanilla": true
+  },
+  {
+   "id": "curse-of-binding",
+   "name": "Curse of Binding",
+   "maxLevel": 1,
+   "type": "curse",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "Armor",
+    "Elytra"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Can't be taken off once worn",
+   "vanilla": true
+  },
+  {
+   "id": "curse-of-vanishing",
+   "name": "Curse of Vanishing",
+   "maxLevel": 1,
+   "type": "curse",
+   "rarity": "Vanilla",
+   "cost": 4,
+   "appliesTo": [
+    "All"
+   ],
+   "requirements": [],
+   "conflicts": [],
+   "description": "Disappears when you die",
+   "vanilla": true
+  }
+ ]
+}

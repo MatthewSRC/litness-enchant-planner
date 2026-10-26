@@ -1,0 +1,546 @@
+// Recommended loadouts, picked from the enchantment descriptions in enchants.json,
+// with the vanilla enchantments (vanilla.json) that complete them. Custom and
+// vanilla together stay within the server's 12 per item. builds.test.ts checks
+// every build against the server's rules and the anvil's 39-level cap.
+
+export type Goal = "PvP" | "PvE" | "Bosses" | "Gathering" | "Team";
+
+export type Build = {
+  id: string;
+  item: string;
+  goal: Goal;
+  title: string;
+  summary: string;
+  /** Custom enchantment ids, each with why it's in. */
+  picks: [id: string, why: string][];
+  /** Vanilla enchantment ids to add alongside. */
+  vanilla: string[];
+  note?: string;
+};
+
+export const BUILDS: Build[] = [
+  // Sword
+  {
+    id: "sword-pvp",
+    item: "sword",
+    goal: "PvP",
+    title: "Duelist",
+    summary: "Stacks every crit and execute multiplier, freezes the target in place and heals on every hit.",
+    picks: [
+      ["introversion", "+3.75 against players, more than Sharpness V gives"],
+      ["phantom-strike", "+60% critical damage"],
+      ["criticals", "Another +30% on crits"],
+      ["finishing", "Up to +99% as they lose health"],
+      ["reaper", "20x damage below 14%: ends the fight"],
+      ["hemorrhage", "Every hit bleeds 15 extra damage"],
+      ["frostbite", "25% chance of Slowness IV: they can't run"],
+      ["vampirism", "Heals 30% of damage, 3 hearts per kill"],
+      ["vitality", "Spell: one full heal per fight"],
+      ["soulbound", "Unique: you keep the sword if you die"],
+    ],
+    vanilla: ["unbreaking", "mending"],
+    note: "Introversion blocks Sharpness, Smite and Bane of Arthropods. Swap Vitality for Soul Storm (+150% damage for 25 s) if you'd rather burst than sustain.",
+  },
+  {
+    id: "sword-pve",
+    item: "sword",
+    goal: "PvE",
+    title: "Mob Grinder",
+    summary: "Area damage on every swing, heals per kill, and loot and XP straight into your inventory.",
+    picks: [
+      ["chain-strike", "35%: lightning jumps to 3 more mobs"],
+      ["ignis-fury", "Spell: 50% to burn and blast 8 damage around the target"],
+      ["hemorrhage", "Every hit bleeds 15 extra damage"],
+      ["vampirism", "3 hearts back on every kill"],
+      ["phantom-strike", "+60% critical damage"],
+      ["criticals", "Another +30% on crits"],
+      ["telekinesis", "Drops and XP go straight to you"],
+      ["wisdom", "+30% XP while held"],
+    ],
+    vanilla: ["sharpness", "looting", "unbreaking", "mending"],
+  },
+  {
+    id: "sword-boss",
+    item: "sword",
+    goal: "Bosses",
+    title: "Boss Slayer",
+    summary: "Multipliers that grow with the target's health pool, plus a 25-second damage burst.",
+    picks: [
+      ["goliath", "Up to +100% against targets with more health than you"],
+      ["executioner", "2x below 20%; Reaper stops working on bosses over 100 health"],
+      ["phantom-strike", "+60% critical damage"],
+      ["criticals", "Another +30% on crits"],
+      ["hemorrhage", "Every hit bleeds 15 extra damage"],
+      ["finishing", "Up to +99% as the boss loses health"],
+      ["vampirism", "Heals 30% of damage dealt"],
+      ["soul-storm", "Spell: +150% damage for 25 s"],
+      ["soulbound", "Unique: keep it if the boss wins"],
+    ],
+    vanilla: ["sharpness", "unbreaking", "mending"],
+    note: "For the Ender Dragon swap Finishing for End Affinity (+60% in the End); for the Wither, Nether Affinity.",
+  },
+
+  // Axe
+  {
+    id: "axe-pvp",
+    item: "axe",
+    goal: "PvP",
+    title: "Executioner Axe",
+    summary: "Shield-breaking hits that get faster and harder as the fight turns against you.",
+    picks: [
+      ["berserker", "+50% damage and +30% speed below half health"],
+      ["criticals", "+30% critical damage"],
+      ["executioner", "2x damage below 20%"],
+      ["finishing", "Up to +99% as they lose health"],
+      ["hemorrhage", "Every hit bleeds 15 extra damage"],
+      ["dexterity", "+20% attack speed, big on a slow axe"],
+      ["vampirism", "Heals 30% of damage dealt"],
+      ["vitality", "Spell: one full heal per fight"],
+      ["soulbound", "Unique: keep it if you die"],
+    ],
+    vanilla: ["sharpness", "unbreaking", "mending"],
+    note: "Berserker conflicts with Shura. Berserker wins: it boosts every hit, Shura only crits.",
+  },
+  {
+    id: "axe-pve",
+    item: "axe",
+    goal: "PvE",
+    title: "Crowd Cleaver",
+    summary: "Every swing damages everything around the target. The best crowd-clearing weapon on the server.",
+    picks: [
+      ["carve", "6 damage to every entity within 5 blocks, every hit"],
+      ["chain-strike", "35%: lightning jumps to 3 more mobs"],
+      ["ignis-fury", "Spell: 50% to burn and blast 8 damage around"],
+      ["hemorrhage", "Every hit bleeds 15 extra damage"],
+      ["vampirism", "3 hearts back on every kill"],
+      ["criticals", "+30% critical damage"],
+      ["dexterity", "+20% attack speed"],
+      ["telekinesis", "Drops and XP go straight to you"],
+      ["wisdom", "+30% XP while held"],
+    ],
+    vanilla: ["sharpness", "unbreaking", "mending"],
+  },
+  {
+    id: "axe-lumber",
+    item: "axe",
+    goal: "Gathering",
+    title: "Lumberjack",
+    summary: "Fells a whole tree in one swing and drops it in your inventory.",
+    picks: [
+      ["timber", "Unique: up to 16 connected logs per swing"],
+      ["overclock", "+24% mining speed"],
+      ["telekinesis", "Logs go straight to you"],
+      ["resonance", "Bonus XP per natural block broken"],
+    ],
+    vanilla: ["efficiency", "unbreaking", "mending"],
+    note: "Timber conflicts with Lumberjack (18% double logs). A whole tree per swing beats double drops on some logs.",
+  },
+
+  // Pickaxe
+  {
+    id: "pickaxe-ores",
+    item: "pickaxe",
+    goal: "Gathering",
+    title: "Ore Vacuum",
+    summary: "Finds ores through walls, rips out the whole vein, multiplies and smelts the drops.",
+    picks: [
+      ["veinminer", "Up to 14 connected ores in one go"],
+      ["catalyst", "70% chance of Fortune V drops"],
+      ["ignis-furnace", "Unique: iron, gold, copper and debris drop smelted"],
+      ["xray", "Spell: ores glow through walls for 4 s"],
+      ["overclock", "+24% mining speed"],
+      ["prospector", "9% chance of a random ingot or gem from stone"],
+      ["nether-prospector", "+110% ancient debris"],
+      ["telekinesis", "Drops go straight to you"],
+      ["resonance", "Bonus XP per natural block"],
+    ],
+    vanilla: ["efficiency", "unbreaking", "mending"],
+    note: "Catalyst and Nether Prospector block Fortune and Silk Touch.",
+  },
+  {
+    id: "pickaxe-tunnel",
+    item: "pickaxe",
+    goal: "Gathering",
+    title: "Tunnel Bore",
+    summary: "Clears a 3x3 tunnel with every block you break, for strip mining and building.",
+    picks: [
+      ["auger", "Unique: mines the 3x3 face around every block"],
+      ["xray", "Spell: see ores through the walls"],
+      ["overclock", "+24% mining speed"],
+      ["catalyst", "70% chance of Fortune V drops"],
+      ["prospector", "9% chance of a random ingot or gem from stone"],
+      ["telekinesis", "Drops go straight to you"],
+      ["resonance", "Bonus XP per natural block"],
+    ],
+    vanilla: ["efficiency", "unbreaking", "mending"],
+    note: "Auger doesn't work in the Nether, and conflicts with Veinminer, Blast Mining and Dynamite.",
+  },
+  {
+    id: "pickaxe-demolition",
+    item: "pickaxe",
+    goal: "Gathering",
+    title: "Demolition",
+    summary: "Random 3x3x3 blasts while mining, plus a 5x5x5 crater on demand.",
+    picks: [
+      ["blast-mining", "Unique: 15% chance to blast a 3x3x3 cube"],
+      ["dynamite", "Spell: blast a 5x5x5 cube every 60 s"],
+      ["overclock", "+24% mining speed"],
+      ["catalyst", "70% chance of Fortune V drops"],
+      ["prospector", "9% chance of a random ingot or gem from stone"],
+      ["telekinesis", "Drops go straight to you"],
+      ["resonance", "Bonus XP per natural block"],
+    ],
+    vanilla: ["efficiency", "unbreaking", "mending"],
+  },
+
+  // Shovel
+  {
+    id: "shovel-dig",
+    item: "shovel",
+    goal: "Gathering",
+    title: "Excavator",
+    summary: "Digs six blocks per swing, smelts sand into glass and doubles gravel drops.",
+    picks: [
+      ["excavation", "5 extra blocks in a line"],
+      ["overclock", "+24% digging speed"],
+      ["infernal-touch", "Sand drops as glass, clay as terracotta"],
+      ["catalyst", "70% chance of Fortune V on gravel"],
+      ["telekinesis", "Drops go straight to you"],
+      ["resonance", "Bonus XP per natural block"],
+    ],
+    vanilla: ["efficiency", "unbreaking", "mending"],
+  },
+
+  // Hoe
+  {
+    id: "hoe-farm",
+    item: "hoe",
+    goal: "Gathering",
+    title: "Auto Farmer",
+    summary: "Harvest and replant in one click, without spending seeds.",
+    picks: [
+      ["green-thumb", "Replants without using a seed (Replenish uses one)"],
+      ["telekinesis", "Crops go straight to you"],
+      ["foraging", "+210% apples from leaves"],
+      ["wisdom", "+30% XP while held"],
+    ],
+    vanilla: ["fortune", "efficiency", "unbreaking", "mending"],
+  },
+
+  // Bow
+  {
+    id: "bow-pvp",
+    item: "bow",
+    goal: "PvP",
+    title: "Sniper",
+    summary: "Full-power shots at 40% draw that slow, blind and bleed, plus a sneak-teleport to escape.",
+    picks: [
+      ["rapid", "Full damage at 40% draw: much faster shots"],
+      ["perforation", "+40% arrow damage"],
+      ["frost-arrow", "50% chance of Slowness IV for 6 s"],
+      ["flashbang", "24% chance of Blindness and Slowness"],
+      ["skull-puncture", "+30% on headshots"],
+      ["jumpshot", "+30% while you're mid-air"],
+      ["wound", "21% chance of bleeding"],
+      ["ethereal-arrow", "Unique: sneak-shoot to teleport out"],
+      ["arrow-storm", "Spell: a 10-arrow volley every 10 s"],
+    ],
+    vanilla: ["power", "unbreaking", "mending"],
+    note: "Against one player, extra arrows (Tripleshot, Cluster Shot) mostly hit during the target's invulnerability frames, so they're left out here.",
+  },
+  {
+    id: "bow-pve",
+    item: "bow",
+    goal: "PvE",
+    title: "Arrow Rain",
+    summary: "Homing, exploding, multiplied arrows for clearing whole groups of mobs.",
+    picks: [
+      ["guided", "Arrows home in on mobs within 40 blocks"],
+      ["tripleshot", "3 arrows per shot"],
+      ["cluster-shot", "Unique: 6 more arrows, using only 1"],
+      ["explosive-arrow", "Every arrow explodes, without breaking blocks"],
+      ["arrow-storm", "Spell: a 10-arrow volley every 10 s"],
+      ["rapid", "Full damage at 40% draw"],
+      ["perforation", "+40% arrow damage"],
+      ["thor", "6% chance of a 15-damage lightning strike"],
+    ],
+    vanilla: ["power", "unbreaking", "mending"],
+    note: "Explosive Arrow conflicts with Punch.",
+  },
+  {
+    id: "bow-boss",
+    item: "bow",
+    goal: "Bosses",
+    title: "Dragon Hunter",
+    summary: "Long-range damage stacked for bosses, best in the End.",
+    picks: [
+      ["boss-hunter", "+80% damage against bosses"],
+      ["perforation", "+40% arrow damage"],
+      ["snipe", "Up to +60% from far away"],
+      ["end-affinity", "+60% damage in the End"],
+      ["rapid", "Full damage at 40% draw"],
+      ["tripleshot", "3 arrows per shot"],
+      ["wound", "21% chance of bleeding"],
+      ["cluster-shot", "Unique: 6 more arrows, using only 1"],
+      ["arrow-storm", "Spell: a 10-arrow volley every 10 s"],
+    ],
+    vanilla: ["power", "unbreaking", "mending"],
+    note: "For the Wither swap End Affinity for Nether Affinity.",
+  },
+
+  // Crossbow
+  {
+    id: "crossbow-pvp",
+    item: "crossbow",
+    goal: "PvP",
+    title: "Hunter",
+    summary: "One bolt that slows, blinds and bleeds, with a teleport out.",
+    picks: [
+      ["perforation", "+40% arrow damage"],
+      ["frost-arrow", "50% chance of Slowness IV for 6 s"],
+      ["flashbang", "24% chance of Blindness and Slowness"],
+      ["skull-puncture", "+30% on headshots"],
+      ["jumpshot", "+30% while you're mid-air"],
+      ["snipe", "Up to +60% from far away"],
+      ["wound", "21% chance of bleeding"],
+      ["thor", "6% chance of a 15-damage lightning strike"],
+      ["ethereal-arrow", "Unique: sneak-shoot to teleport"],
+    ],
+    vanilla: ["quick-charge", "unbreaking", "mending"],
+  },
+  {
+    id: "crossbow-pve",
+    item: "crossbow",
+    goal: "PvE",
+    title: "Scatter Bolt",
+    summary: "A spray of homing, exploding bolts for groups of mobs.",
+    picks: [
+      ["cluster-shot", "Unique: 6 more arrows, using only 1"],
+      ["explosive-arrow", "Every bolt explodes"],
+      ["guided", "Bolts home in on mobs"],
+      ["perforation", "+40% arrow damage"],
+      ["wound", "21% chance of bleeding"],
+      ["thor", "6% chance of a 15-damage lightning strike"],
+      ["stun", "10% chance to stun mobs for 2 s"],
+    ],
+    vanilla: ["multishot", "quick-charge", "unbreaking", "mending"],
+  },
+
+  // Trident
+  {
+    id: "trident-all",
+    item: "trident",
+    goal: "PvE",
+    title: "Storm Spear",
+    summary: "Poison clouds where it lands, stuns, and extra speed while you hold it.",
+    picks: [
+      ["contagion", "10% chance of a poison cloud where it lands"],
+      ["stun", "10% chance to stun mobs for 2 s"],
+      ["slipstream", "+24% speed while held"],
+      ["nether-affinity", "+60% damage in the Nether"],
+      ["soulbound", "Unique: keep it if you die"],
+    ],
+    vanilla: ["impaling", "loyalty", "channeling", "unbreaking", "mending"],
+    note: "Swap Nether Affinity for End Affinity when you fight in the End.",
+  },
+
+  // Fishing rod
+  {
+    id: "rod-pvp",
+    item: "fishing_rod",
+    goal: "PvP",
+    title: "Storm Rod",
+    summary: "Hooking a player in the rain has a 50% chance to call lightning.",
+    picks: [
+      ["sparks", "50% chance of 6-damage lightning when it rains"],
+      ["soulbound", "Unique: keep it if you die"],
+    ],
+    vanilla: ["unbreaking", "mending"],
+  },
+
+  // Helmet
+  {
+    id: "helmet-pvp",
+    item: "helmet",
+    goal: "PvP",
+    title: "Night Hunter",
+    summary: "Permanent night vision, speed at night, potion resistance and a parting explosion.",
+    picks: [
+      ["night-stalker", "Night Vision, and Speed II at night"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+      ["vanish", "4% chance to vanish for 4 s when hit"],
+      ["satiety", "Hunger refills from your XP"],
+      ["haunting", "9 damage to everyone near you when you die"],
+      ["soulbound", "Unique: keep it if you die"],
+    ],
+    vanilla: ["protection", "unbreaking", "mending"],
+  },
+  {
+    id: "helmet-explore",
+    item: "helmet",
+    goal: "PvE",
+    title: "Deep Diver",
+    summary: "Breathe and mine underwater forever, and never starve or suffocate.",
+    picks: [
+      ["gill-lungs", "Unique: endless breathing and Conduit Power"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+      ["satiety", "Hunger refills from your XP"],
+      ["block-breather", "65% chance to ignore suffocation"],
+    ],
+    vanilla: ["protection", "unbreaking", "mending"],
+    note: "Gill Lungs conflicts with Aqua Affinity and Night Stalker.",
+  },
+
+  // Chestplate
+  {
+    id: "chest-pvp",
+    item: "chestplate",
+    goal: "PvP",
+    title: "Last Stand",
+    summary: "Survives a killing blow, burns and weakens anyone who hits you, and adds health and damage.",
+    picks: [
+      ["phoenix-heart", "Unique: survive a fatal blow every 10 min"],
+      ["molten-heart", "90%: attackers burn and get Weakness I"],
+      ["thrive", "+1 heart"],
+      ["fortitude", "+4% damage dealt"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+      ["vanish", "4% chance to vanish for 4 s when hit"],
+      ["stamina", "80% less hunger from sprinting"],
+    ],
+    vanilla: ["protection", "unbreaking", "mending"],
+  },
+  {
+    id: "chest-pve",
+    item: "chestplate",
+    goal: "PvE",
+    title: "Vortex Tank",
+    summary: "Pulls mobs in when you're hit, sets them on fire, and keeps you alive.",
+    picks: [
+      ["phoenix-heart", "Unique: survive a fatal blow every 10 min"],
+      ["graviton", "Getting hit pulls mobs within 5 blocks toward you"],
+      ["molten-heart", "90%: attackers burn and get Weakness I"],
+      ["thrive", "+1 heart"],
+      ["fortitude", "+4% damage dealt"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+      ["metabolism", "Food restores 25% more"],
+    ],
+    vanilla: ["protection", "unbreaking", "mending"],
+    note: "Graviton pairs with the Crowd Cleaver axe: the mobs come to Carve.",
+  },
+  {
+    id: "chest-team",
+    item: "chestplate",
+    goal: "Team",
+    title: "Guardian",
+    summary: "Your whole team takes 15% less damage while near you.",
+    picks: [
+      ["aura", "Unique: teammates within 7 blocks take 15% less damage"],
+      ["molten-heart", "90%: attackers burn and get Weakness I"],
+      ["thrive", "+1 heart"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+      ["fortitude", "+4% damage dealt"],
+    ],
+    vanilla: ["protection", "unbreaking", "mending"],
+    note: "Aura replaces Phoenix Heart: only one Unique fits.",
+  },
+
+  // Leggings
+  {
+    id: "legs-tank",
+    item: "leggings",
+    goal: "PvP",
+    title: "Iron Wall",
+    summary: "21% less damage on the ground, a dodge and heal when you're nearly dead, and blinds attackers.",
+    picks: [
+      ["iron-stance", "21% less damage from everything while grounded"],
+      ["shadow-step", "Unique: below 30%, dodge a hit and heal 10"],
+      ["static-barrier", "45%: attackers get Blindness and Slowness II"],
+      ["thrive", "+1 heart"],
+      ["fortitude", "+4% damage dealt"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+      ["vanish", "4% chance to vanish for 4 s when hit"],
+    ],
+    vanilla: ["protection", "unbreaking", "mending"],
+    note: "Works just as well against mobs. Static Barrier conflicts with Poison Ivy; blinding beats a short poison.",
+  },
+  {
+    id: "legs-team",
+    item: "leggings",
+    goal: "Team",
+    title: "Bulwark",
+    summary: "The tank build with Aura in place of Shadow Step, to protect the team.",
+    picks: [
+      ["aura", "Unique: teammates within 7 blocks take 15% less damage"],
+      ["iron-stance", "21% less damage while grounded"],
+      ["static-barrier", "45%: attackers get Blindness and Slowness II"],
+      ["thrive", "+1 heart"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+    ],
+    vanilla: ["protection", "unbreaking", "mending"],
+  },
+
+  // Boots
+  {
+    id: "boots-pvp",
+    item: "boots",
+    goal: "PvP",
+    title: "Skyrunner",
+    summary: "No fall damage, Jump Boost II and +20% speed, with more speed when you're low.",
+    picks: [
+      ["bouncy", "Unique: no fall damage, permanent Jump Boost II"],
+      ["streamlining", "+20% movement speed, always on"],
+      ["getaway", "+20% more speed below 20% health"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+      ["vanish", "4% chance to vanish for 4 s when hit"],
+    ],
+    vanilla: ["protection", "depth-strider", "unbreaking", "mending"],
+    note: "Bouncy conflicts with Feather Falling, and doesn't need it. Streamlining conflicts with Escape.",
+  },
+  {
+    id: "boots-pve",
+    item: "boots",
+    goal: "PvE",
+    title: "Frost Nova",
+    summary: "Jump down into a crowd: landing freezes every hostile mob within 5 blocks.",
+    picks: [
+      ["glacier-stomp", "Fall damage freezes mobs within 5 blocks (halved fall damage)"],
+      ["escape", "+40% speed for 2 s whenever you're hit"],
+      ["getaway", "+20% speed below 20% health"],
+      ["arcane-defence", "20% per piece to negate poison and magic"],
+      ["soulbound", "Unique: keep them if you die"],
+    ],
+    vanilla: ["protection", "feather-falling", "unbreaking", "mending"],
+    note: "Glacier Stomp needs some fall damage to trigger, so keep Feather Falling instead of Bouncy.",
+  },
+
+  // Elytra
+  {
+    id: "elytra-fly",
+    item: "elytra",
+    goal: "PvP",
+    title: "Sky Striker",
+    summary: "Saves rockets and adds 30% melee damage for diving attacks.",
+    picks: [
+      ["rocket-saver", "60% chance to keep the firework"],
+      ["wyvern", "+30% melee damage"],
+      ["soulbound", "Unique: keep it if you die"],
+    ],
+    vanilla: ["unbreaking", "mending"],
+    note: "Repairing only works while the item is neither held nor worn, so Mending is the better repair on anything you use.",
+  },
+
+  // Shield
+  {
+    id: "shield-block",
+    item: "shield",
+    goal: "PvP",
+    title: "Counter Shield",
+    summary: "Every block hits back and gives you Strength.",
+    picks: [
+      ["adrenaline", "Strength for 4 s after each block"],
+      ["rebounding", "Blocking a melee hit returns 50% of it"],
+      ["soulbound", "Unique: keep it if you die"],
+    ],
+    vanilla: ["unbreaking", "mending"],
+  },
+];
