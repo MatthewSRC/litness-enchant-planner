@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { ENCHANTS, LIMITS } from "../lib/data";
 import { blockReason, type Enchant, type EnchantType, fits, fullName, type Item } from "../lib/rules";
+import { smooth } from "../ui/motion";
 import { colors, fonts, hovered, rarityColor, typeColor, typeLabel } from "../ui/theme";
 import { icons } from "./icons";
 
@@ -42,7 +43,7 @@ export function EnchantList({ item, picked, onToggle }: { item: Item; picked: En
             onPress={() => setFilter(f)}
             accessibilityRole="button"
             accessibilityState={{ selected: filter === f }}
-            style={[styles.chip, filter === f && styles.chipOn]}
+            style={[styles.chip, smooth, filter === f && styles.chipOn]}
           >
             <Text style={[styles.chipText, { color: f === "all" || f === "normal" ? colors.text : f === "vanilla" ? rarityColor.Vanilla : typeColor[f] }]}>
               {f === "all" ? "All" : f === "vanilla" ? "Vanilla" : typeLabel[f]}
@@ -81,7 +82,7 @@ function Row({ enchant: e, on, reason, onPress }: { enchant: Enchant; on: boolea
       accessibilityRole="checkbox"
       accessibilityLabel={reason ? `${fullName(e)}: ${reason}` : fullName(e)}
       accessibilityState={{ checked: on, disabled: !!reason }}
-      style={(state) => [styles.row, hovered(state) && !reason && styles.rowHover, on && styles.rowOn, !!reason && styles.rowBlocked]}
+      style={(state) => [styles.row, smooth, hovered(state) && !reason && styles.rowHover, on && styles.rowOn, !!reason && styles.rowBlocked]}
     >
       <Image source={icons.book} style={styles.book} />
       <View style={styles.body}>
@@ -100,7 +101,7 @@ function Row({ enchant: e, on, reason, onPress }: { enchant: Enchant; on: boolea
       <View style={styles.side}>
         <Text style={styles.cost}>+{e.cost}</Text>
         <Text style={styles.costUnit}>levels</Text>
-        <View style={[styles.check, on && styles.checkOn]}>{on && <Text style={styles.tick}>✓</Text>}</View>
+        <View style={[styles.check, smooth, on && styles.checkOn]}>{on && <Text style={styles.tick}>✓</Text>}</View>
       </View>
     </Pressable>
   );

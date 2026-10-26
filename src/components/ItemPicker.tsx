@@ -1,5 +1,6 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { ITEMS } from "../lib/rules";
+import { smooth } from "../ui/motion";
 import { colors, fonts, hovered } from "../ui/theme";
 import { icons } from "./icons";
 
@@ -15,7 +16,7 @@ export function ItemPicker({ value, onChange }: { value: string; onChange: (id: 
             accessibilityRole="radio"
             accessibilityState={{ checked: on }}
             accessibilityLabel={item.label}
-            style={(state) => [styles.cell, hovered(state) && styles.hover, on && styles.on]}
+            style={(state) => [styles.cell, smooth, hovered(state) && styles.hover, state.pressed && styles.pressed, on && styles.on]}
           >
             <Image source={icons[item.id]} style={item.id === "shield" ? styles.shield : styles.icon} />
             <Text style={[styles.label, on && styles.labelOn]} numberOfLines={1}>
@@ -42,7 +43,8 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     backgroundColor: colors.panel,
   },
-  hover: { borderColor: colors.faint },
+  hover: { borderColor: colors.faint, transform: [{ translateY: -2 }] },
+  pressed: { transform: [{ scale: 0.96 }] },
   on: { borderColor: colors.accent, backgroundColor: colors.raised },
   icon: { width: 32, height: 32 },
   shield: { width: 18, height: 33 },

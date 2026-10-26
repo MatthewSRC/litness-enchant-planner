@@ -3,6 +3,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { type Objective, solve, xpFor } from "../lib/anvil";
 import { LIMITS } from "../lib/data";
 import { type Enchant, fullName, type Item } from "../lib/rules";
+import { smooth } from "../ui/motion";
 import { colors, fonts, typeColor } from "../ui/theme";
 import { icons } from "./icons";
 
@@ -79,7 +80,7 @@ export function PlanPanel({ item, picked, options, onOptions, onRemove }: Props)
               onPress={() => onOptions({ ...options, objective: o })}
               accessibilityRole="radio"
               accessibilityState={{ checked: options.objective === o }}
-              style={[styles.segBtn, options.objective === o && styles.segOn]}
+              style={[styles.segBtn, smooth, options.objective === o && styles.segOn]}
             >
               <Text style={[styles.segText, options.objective === o && styles.segTextOn]}>{o === "xp" ? "Fewest XP points" : "Fewest levels"}</Text>
             </Pressable>

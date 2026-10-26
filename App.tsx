@@ -11,7 +11,8 @@ import { type Build, BUILDS } from "./src/data/builds";
 import { type Enchant, fits, ITEMS } from "./src/lib/rules";
 import { buildFromUrl, setBuildInUrl } from "./src/lib/share";
 import { SITE } from "./src/site";
-import { colors, fonts } from "./src/ui/theme";
+import { FadeIn, smooth } from "./src/ui/motion";
+import { colors, fonts, hovered } from "./src/ui/theme";
 
 export default function App() {
   const wide = useWindowDimensions().width >= 980;
@@ -55,6 +56,7 @@ export default function App() {
     <View style={styles.header}>
       <Text style={styles.sub}>Pick an item and its enchantments. The planner finds the anvil order that costs the least XP.</Text>
       {shown && (
+        <FadeIn key={shown.id} distance={4}>
         <View style={styles.shown}>
           <Text style={styles.shownText}>
             Build: <Text style={styles.shownTitle}>{shown.title}</Text> <Text style={{ color: goalColor[shown.goal] }}>{shown.goal}</Text>
@@ -63,6 +65,7 @@ export default function App() {
             <Text style={styles.shownLink}>All builds</Text>
           </Pressable>
         </View>
+        </FadeIn>
       )}
     </View>
   );
@@ -89,7 +92,7 @@ export default function App() {
                 onPress={() => setPage(p)}
                 accessibilityRole="tab"
                 accessibilityState={{ selected: page === p }}
-                style={[styles.tab, page === p && styles.tabOn]}
+                style={(s) => [styles.tab, smooth, hovered(s) && page !== p && styles.tabHover, page === p && styles.tabOn]}
               >
                 <Text style={[styles.tabText, page === p && styles.tabTextOn]}>{p === "planner" ? "Planner" : "Best builds"}</Text>
               </Pressable>
@@ -97,6 +100,7 @@ export default function App() {
           </View>
         </View>
       </View>
+      <FadeIn key={page} distance={0} style={styles.pageFade}>
       {page === "builds" ? (
         <BuildsPage onOpen={openBuild} />
       ) : wide ? (
@@ -122,6 +126,7 @@ export default function App() {
           <Footer />
         </ScrollView>
       )}
+      </FadeIn>
     </View>
   );
 }
@@ -148,7 +153,9 @@ const styles = StyleSheet.create({
   brand: { color: colors.text, fontFamily: fonts.pixel, fontSize: 24, fontWeight: "600" },
   tabs: { flexDirection: "row", gap: 4, padding: 3, borderRadius: 6, borderWidth: 1, borderColor: colors.line },
   tab: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 4 },
+  tabHover: { backgroundColor: colors.raised },
   tabOn: { backgroundColor: colors.accent },
+  pageFade: { flex: 1 },
   tabText: { color: colors.muted, fontFamily: fonts.pixel, fontSize: 14 },
   tabTextOn: { color: colors.bg },
   header: { gap: 10 },
