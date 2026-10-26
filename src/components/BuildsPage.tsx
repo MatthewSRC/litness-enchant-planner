@@ -45,8 +45,9 @@ export function BuildsPage({ onOpen }: { onOpen: (b: Build) => void }) {
             <View style={styles.intro}>
               <Text style={styles.h1}>Best builds</Text>
               <Text style={styles.lead}>
-                The strongest combinations for each item, picked from what every enchantment does. Pick an item to see its builds. Each one follows the
-                server's limits (12 per item, 1 Unique, 1 Spell, no conflicts), vanilla enchantments included.
+                The strongest combinations for each item, picked from what every enchantment does. PvE and boss builds are made for the server's
+                dungeons, where custom mobs and bosses have lots of health and hit hard. Each build follows the server's limits (12 per item, 1 Unique, 1
+                Spell, no conflicts), vanilla enchantments included.
               </Text>
             </View>
             <View style={styles.filters} accessibilityRole="radiogroup">
