@@ -21,6 +21,7 @@ export default function App() {
   const [picked, setPicked] = useState<Enchant[]>([]);
   const [options, setOptions] = useState<PlanOptions>({ priorUses: 0, maxStep: 39, objective: "xp" });
   const [shown, setShown] = useState<Build | null>(null); // the build loaded, until it's changed
+  const [worked, setWorked] = useState<Record<string, number>>({}); // prior anvil uses of combined books
   const item = ITEMS.find((i) => i.id === itemId) ?? ITEMS[0];
 
   const chooseItem = (id: string) => {
@@ -36,6 +37,7 @@ export default function App() {
   const openBuild = (b: Build) => {
     setItemId(b.item);
     setPicked(enchantsOf(b));
+    setWorked({});
     setOptions((o) => ({ ...o, priorUses: 0 }));
     setPage("planner");
     setShown(b);
@@ -43,8 +45,15 @@ export default function App() {
   };
   const toggle = (e: Enchant) => {
     setPicked((p) => (p.some((x) => x.id === e.id) ? p.filter((x) => x.id !== e.id) : [...p, e]));
+    setWorked(({ [e.id]: _, ...rest }) => rest);
     leaveBuild();
   };
+  const clear = () => {
+    setPicked([]);
+    setWorked({});
+    leaveBuild();
+  };
+  const work = (e: Enchant, uses: number) => setWorked((w) => ({ ...w, [e.id]: uses }));
 
   // A shared link (?build=<id>) opens the planner with that build loaded.
   useEffect(() => {
@@ -76,7 +85,16 @@ export default function App() {
     </View>
   );
   const picker = <ItemPicker value={item.id} onChange={chooseItem} />;
-  const plan = <PlanPanel item={item} picked={picked} options={options} onOptions={setOptions} onRemove={toggle} />;
+  const plan = <PlanPanel
+      item={item}
+      picked={picked}
+      options={options}
+      onOptions={setOptions}
+      onRemove={toggle}
+      worked={worked}
+      onWork={work}
+      onClear={clear}
+    />;
   const list = <EnchantList item={item} picked={picked} onToggle={toggle} />;
 
   return (

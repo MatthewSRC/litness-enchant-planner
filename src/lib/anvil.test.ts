@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { solve, xpFor } from "./anvil.ts";
 
 // Tries every merge tree: the slow, obviously-correct answer.
-function brute(costs: number[], itemUses: number | null, maxStep: number, score: (c: number) => number) {
+function brute(costs: number[], itemUses: number | null, maxStep: number, score: (c: number) => number, bookUses: number[] = []) {
   type Node = { v: number; u: number; item: boolean };
   let best = Number.POSITIVE_INFINITY;
   const go = (pool: Node[], acc: number) => {
@@ -19,7 +19,7 @@ function brute(costs: number[], itemUses: number | null, maxStep: number, score:
         go([...rest, { v: L.v + R.v, u: Math.max(L.u, R.u) + 1, item: L.item }], acc + score(c));
       }
   };
-  const leaves: Node[] = costs.map((v) => ({ v, u: 0, item: false }));
+  const leaves: Node[] = costs.map((v, i) => ({ v, u: bookUses[i] ?? 0, item: false }));
   if (itemUses !== null) leaves.push({ v: 0, u: itemUses, item: true });
   go(leaves, 0);
   return best;
@@ -33,9 +33,11 @@ test("matches brute force on random cases", () => {
     const item = rnd() < 0.5 ? null : Math.floor(rnd() * 3);
     const max = rnd() < 0.3 ? 12 : 39;
     const objective = rnd() < 0.5 ? "xp" : "levels";
-    const plan = solve(costs, item, max, objective);
+    // Some books were already made in an anvil (two books combined into a higher level).
+    const bookUses = costs.map(() => (rnd() < 0.3 ? 1 + Math.floor(rnd() * 2) : 0));
+    const plan = solve(costs, item, max, objective, bookUses);
     const got = plan ? (objective === "xp" ? plan.xp : plan.levels) : Number.POSITIVE_INFINITY;
-    assert.equal(got, brute(costs, item, max, objective === "xp" ? xpFor : (c) => c), JSON.stringify({ costs, item, max }));
+    assert.equal(got, brute(costs, item, max, objective === "xp" ? xpFor : (c) => c, bookUses), JSON.stringify({ costs, item, max, bookUses }));
     if (plan) assert.equal(plan.steps.reduce((s, x) => s + x.cost, 0), plan.levels);
   }
 });
@@ -44,4 +46,10 @@ test("12 books onto an item stays fast", () => {
   const t0 = performance.now();
   solve([7, 5, 4, 15, 7, 19, 14, 13, 7, 9, 7, 2], 0, 39, "xp");
   assert.ok(performance.now() - t0 < 1500);
+});
+
+test("a combined book costs more to apply", () => {
+  // Item + one fresh book costs 7; the same book made from two books (1 prior use) adds 2^1 - 1.
+  assert.equal(solve([7], 0, 39, "levels")?.levels, 7);
+  assert.equal(solve([7], 0, 39, "levels", [1])?.levels, 8);
 });

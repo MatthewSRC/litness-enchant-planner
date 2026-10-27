@@ -21,15 +21,16 @@ export function xpFor(level: number): number {
  * so keeping the best per pair is optimal.
  * @param costs right-slot cost of each book
  * @param itemUses prior anvil uses of the item, or null to merge books only
+ * @param bookUses prior anvil uses of each book (a book made from two books has 1); default 0
  */
-export function solve(costs: number[], itemUses: number | null, maxStep: number, objective: Objective): Plan | null {
+export function solve(costs: number[], itemUses: number | null, maxStep: number, objective: Objective, bookUses: number[] = []): Plan | null {
   const n = costs.length;
   const hasItem = itemUses !== null;
   const N = n + (hasItem ? 1 : 0);
   if (N < 2) return null;
   const full = (1 << N) - 1;
   const itemBit = hasItem ? 1 << n : 0;
-  const U = N + (itemUses ?? 0) + 1;
+  const U = N + Math.max(itemUses ?? 0, ...bookUses) + 1;
   const size = (full + 1) * U;
 
   const value = new Int32Array(full + 1);
@@ -46,8 +47,9 @@ export function solve(costs: number[], itemUses: number | null, maxStep: number,
   const usesOf = new Int32Array(full + 1); // bit u set when (mask, u) is reachable
 
   for (let i = 0; i < n; i++) {
-    obj[(1 << i) * U] = 0;
-    usesOf[1 << i] = 1;
+    const u = bookUses[i] ?? 0;
+    obj[(1 << i) * U + u] = 0;
+    usesOf[1 << i] = 1 << u;
   }
   if (hasItem) {
     obj[itemBit * U + itemUses] = 0;

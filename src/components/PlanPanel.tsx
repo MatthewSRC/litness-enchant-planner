@@ -15,14 +15,22 @@ type Props = {
   options: PlanOptions;
   onOptions: (o: PlanOptions) => void;
   onRemove: (e: Enchant) => void;
+  /** Prior anvil uses per enchantment id, for books made by combining books. */
+  worked: Record<string, number>;
+  onWork: (e: Enchant, uses: number) => void;
+  onClear: () => void;
 };
 
-export function PlanPanel({ item, picked, options, onOptions, onRemove }: Props) {
+export function PlanPanel({ item, picked, options, onOptions, onRemove, worked, onWork, onClear }: Props) {
   const isBook = item.id === "book";
-  const plan = useMemo(
-    () => solve(picked.map((e) => e.cost), isBook ? null : options.priorUses, options.maxStep, options.objective),
-    [picked, isBook, options],
-  );
+  const bookUses = picked.map((e) => worked[e.id] ?? 0);
+  const anyWorked = bookUses.some((u) => u > 0);
+  const [plan, fresh] = useMemo(() => {
+    const run = (uses?: number[]) => solve(picked.map((e) => e.cost), isBook ? null : options.priorUses, options.maxStep, options.objective, uses);
+    // `fresh` is the same plan with new books, to show what combined books cost.
+    return [run(bookUses), anyWorked ? run() : null];
+  }, [picked, isBook, options, bookUses.join(), anyWorked]);
+  const label = (e: Enchant) => (worked[e.id] ? `${fullName(e)} ⚒` : fullName(e));
   const count = (t: Enchant["type"]) => picked.filter((e) => e.type === t).length;
   const n = picked.length;
   const slot = (mask: number) => {
@@ -35,23 +43,49 @@ export function PlanPanel({ item, picked, options, onOptions, onRemove }: Props)
     <View style={styles.wrap}>
       <View style={styles.headLine}>
         <Text style={styles.h2}>Your enchantments</Text>
-        <Text style={styles.limits}>
-          {n}/{LIMITS.total} · <Text style={{ color: typeColor.unique }}>Unique {count("unique")}/{LIMITS.unique}</Text> ·{" "}
-          <Text style={{ color: typeColor.spell }}>Spell {count("spell")}/{LIMITS.spell}</Text>
-        </Text>
+        <View style={styles.headRight}>
+          <Text style={styles.limits}>
+            {n}/{LIMITS.total} · <Text style={{ color: typeColor.unique }}>Unique {count("unique")}/{LIMITS.unique}</Text> ·{" "}
+            <Text style={{ color: typeColor.spell }}>Spell {count("spell")}/{LIMITS.spell}</Text>
+          </Text>
+          {n > 0 && (
+            <Tap onPress={onClear} accessibilityRole="button" accessibilityLabel="Remove all enchantments" style={styles.clear} hoverStyle={styles.clearHover}>
+              <Text style={styles.clearText}>Clear</Text>
+            </Tap>
+          )}
+        </View>
       </View>
       {n === 0 ? (
         <Text style={styles.hint}>Tick enchantments in the list to add them.</Text>
       ) : (
-        <View style={styles.chips}>
-          {picked.map((e) => (
-            <Pressable key={e.id} onPress={() => onRemove(e)} accessibilityLabel={`Remove ${e.name}`} style={styles.pick}>
-              <Text style={[styles.pickName, { color: typeColor[e.type] }]}>{fullName(e)}</Text>
-              <Text style={styles.pickCost}>+{e.cost}</Text>
-              <Text style={styles.pickX}>×</Text>
-            </Pressable>
-          ))}
-        </View>
+        <>
+          <View style={styles.chips}>
+            {picked.map((e) => {
+              const uses = worked[e.id] ?? 0;
+              return (
+                <View key={e.id} style={[styles.pick, uses > 0 && styles.pickWorked]}>
+                  <Text style={[styles.pickName, { color: typeColor[e.type] }]}>{fullName(e)}</Text>
+                  <Text style={styles.pickCost}>+{e.cost}</Text>
+                  <Tap
+                    onPress={() => onWork(e, (uses + 1) % 4)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${e.name} book made in an anvil ${uses} ${uses === 1 ? "time" : "times"}. Change`}
+                    style={[styles.anvil, uses > 0 && styles.anvilOn]}
+                    hoverStyle={styles.anvilHover}
+                  >
+                    <Text style={[styles.anvilText, uses > 0 && styles.anvilTextOn]}>⚒{uses > 0 ? ` ${uses}` : ""}</Text>
+                  </Tap>
+                  <Tap onPress={() => onRemove(e)} accessibilityRole="button" accessibilityLabel={`Remove ${e.name}`} style={styles.x} hoverStyle={styles.xHover}>
+                    <Text style={styles.pickX}>×</Text>
+                  </Tap>
+                </View>
+              );
+            })}
+          </View>
+          <Text style={styles.hint}>
+            Made a book by combining two in an anvil (like two Ignis Fury I into II)? Tap its ⚒ once per anvil use: combined books cost more to apply.
+          </Text>
+        </>
       )}
 
       <View style={styles.options}>
@@ -93,10 +127,19 @@ export function PlanPanel({ item, picked, options, onOptions, onRemove }: Props)
         <Text style={styles.hint}>{isBook ? "Pick at least two enchantments to merge into one book." : "Pick at least one enchantment."}</Text>
       ) : !plan ? (
         <Text style={styles.error}>
-          No order keeps every step at {options.maxStep} levels or less. Drop an enchantment, or raise the limit if your server allows it.
+          {fresh
+            ? `Your combined books (⚒) make this too expensive: some step would go over ${options.maxStep} levels. With new books it works: ${fresh.levels} levels, biggest step ${fresh.top}.`
+            : `No order keeps every step at ${options.maxStep} levels or less. Drop an enchantment, or raise the limit if your server allows it.`}
         </Text>
       ) : (
         <>
+          {fresh && (
+            <Text style={plan.levels > fresh.levels ? styles.warnNote : styles.okNote}>
+              {plan.levels > fresh.levels
+                ? `Combined books (⚒) add ${plan.levels - fresh.levels} ${plan.levels - fresh.levels === 1 ? "level" : "levels"} (biggest step ${fresh.top} → ${plan.top}). Every step still fits under ${options.maxStep + 1}.`
+                : "Your combined books (⚒) don't change the cost of this plan."}
+            </Text>
+          )}
           <View style={styles.stats}>
             <Stat value={plan.levels} label="Total levels" />
             <Stat value={Math.round(plan.xp).toLocaleString()} label="XP points" />
@@ -111,8 +154,8 @@ export function PlanPanel({ item, picked, options, onOptions, onRemove }: Props)
                 <View key={`${s.left}-${s.right}`} style={styles.step}>
                   <Text style={styles.stepNo}>{i + 1}</Text>
                   <View style={styles.stepBody}>
-                    <Slot label="Left" icon={l.item ? item.id : "book"} text={[...(l.item ? [item.label] : []), ...l.names.map(fullName)].join(" + ")} />
-                    <Slot label="Right" icon="book" text={r.names.map(fullName).join(" + ")} />
+                    <Slot label="Left" icon={l.item ? item.id : "book"} text={[...(l.item ? [item.label] : []), ...l.names.map(label)].join(" + ")} />
+                    <Slot label="Right" icon="book" text={r.names.map(label).join(" + ")} />
                   </View>
                   <View style={styles.stepCost}>
                     <Text style={styles.stepLv}>{s.cost} lv</Text>
@@ -174,19 +217,25 @@ function Stepper(props: { label: string; value: number; min: number; max: number
 
 const styles = StyleSheet.create({
   wrap: { gap: 14 },
-  headLine: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: 8 },
+  headLine: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 8 },
+  headRight: { flexDirection: "row", alignItems: "center", gap: 10 },
+  clear: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 4, borderWidth: 1, borderColor: colors.line },
+  clearHover: { borderColor: colors.warn },
+  clearText: { color: colors.muted, fontFamily: fonts.pixel, fontSize: 12 },
   h2: { color: colors.text, fontFamily: fonts.pixel, fontSize: 18 },
   limits: { color: colors.muted, fontFamily: fonts.pixel, fontSize: 13 },
   hint: { color: colors.muted, fontFamily: fonts.body, fontSize: 13 },
   error: { color: colors.warn, fontFamily: fonts.body, fontSize: 13, lineHeight: 19 },
+  warnNote: { color: "#ffd84a", fontFamily: fonts.body, fontSize: 13, lineHeight: 19 },
+  okNote: { color: colors.muted, fontFamily: fonts.body, fontSize: 13, lineHeight: 19 },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   pick: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
     paddingLeft: 10,
-    paddingRight: 8,
-    paddingVertical: 5,
+    paddingRight: 4,
+    paddingVertical: 3,
     borderRadius: 4,
     backgroundColor: colors.raised,
     borderWidth: 1,
@@ -194,7 +243,15 @@ const styles = StyleSheet.create({
   },
   pickName: { fontFamily: fonts.pixel, fontSize: 13 },
   pickCost: { color: colors.xp, fontFamily: fonts.pixel, fontSize: 12 },
+  pickWorked: { borderColor: "#8a7a3a" },
   pickX: { color: colors.faint, fontSize: 15, lineHeight: 15 },
+  anvil: { paddingHorizontal: 5, paddingVertical: 2, borderRadius: 3, borderWidth: 1, borderColor: "transparent" },
+  anvilOn: { backgroundColor: "#2e2814", borderColor: "#8a7a3a" },
+  anvilHover: { borderColor: colors.faint },
+  anvilText: { color: colors.faint, fontSize: 13 },
+  anvilTextOn: { color: "#ffd84a", fontFamily: fonts.pixel },
+  x: { paddingHorizontal: 5, paddingVertical: 2, borderRadius: 3 },
+  xHover: { backgroundColor: colors.line },
   options: { gap: 10, padding: 12, borderRadius: 6, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.panel },
   stepper: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" },
   stepperLabel: { color: colors.muted, fontFamily: fonts.body, fontSize: 13, flexShrink: 1 },
