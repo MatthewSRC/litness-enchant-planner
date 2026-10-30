@@ -115,7 +115,7 @@ export function PlanPanel({ item, picked, options, onOptions, onRemove, worked, 
           <Text style={styles.hint}>
             Made a book by combining two in an anvil (like two Ignis Fury I into II)? Tap its ⚒ once per anvil use: combined books cost more to apply.
             {picked.some((e) => e.vanilla && e.maxLevel > 1) &&
-              " Vanilla books go above Minecraft's max with − and + (like Unbreaking V); each level adds its book cost again, and one ⚒, since two books of a level make the next."}
+              " Vanilla books go above Minecraft's max with − and + (like Unbreaking V); each level adds its book cost again. Tap ⚒ only if you made that book yourself by combining two."}
           </Text>
         </>
       )}

@@ -8,7 +8,7 @@ import { ItemPicker } from "./src/components/ItemPicker";
 import { ItemViewer } from "./src/components/ItemViewer";
 import { type PlanOptions, PlanPanel } from "./src/components/PlanPanel";
 import { type Build, BUILDS } from "./src/data/builds";
-import { type Enchant, fits, ITEMS, usesForLevel } from "./src/lib/rules";
+import { type Enchant, fits, ITEMS } from "./src/lib/rules";
 import { buildFromUrl, setBuildInUrl } from "./src/lib/share";
 import { SITE } from "./src/site";
 import { FadeIn, Tap } from "./src/ui/motion";
@@ -58,11 +58,7 @@ export default function App() {
     leaveBuild();
   };
   const work = (e: Enchant, uses: number) => setWorked((w) => ({ ...w, [e.id]: uses }));
-  const level = (e: Enchant, lvl: number) => {
-    setLevels((l) => ({ ...l, [e.id]: lvl }));
-    // A book above the max was made in an anvil; the ⚒ can still be changed after.
-    work(e, usesForLevel(e, lvl));
-  };
+  const level = (e: Enchant, lvl: number) => setLevels((l) => ({ ...l, [e.id]: lvl }));
 
   // A shared link (?build=<id>) opens the planner with that build loaded.
   useEffect(() => {

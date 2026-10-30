@@ -49,12 +49,6 @@ export const MAX_VANILLA_LEVEL = 10;
 /** A book's anvil cost at `level`: the cost per level (book multiplier) times the level. */
 export const costAt = (e: Enchant, level = e.maxLevel) => Math.round((e.cost / e.maxLevel) * level);
 
-/**
- * Anvil uses already on a book above Minecraft's max: two books of a level make the next one,
- * so each level past the max is one more merge deep (Power VI = two Power V = 1 use).
- */
-export const usesForLevel = (e: Enchant, level: number) => Math.max(0, level - e.maxLevel);
-
 /** A book holds anything; any other item takes what lists it (or "All"). */
 export const fits = (e: Enchant, item: Item) =>
   item.id === "book" || e.appliesTo.some((t) => t === "All" || item.tags.includes(t));
