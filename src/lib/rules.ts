@@ -40,7 +40,14 @@ export const ITEMS: Item[] = [
 ];
 
 const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
-export const fullName = (e: Enchant) => (e.maxLevel > 1 ? `${e.name} ${ROMAN[e.maxLevel] ?? e.maxLevel}` : e.name);
+export const fullName = (e: Enchant, level = e.maxLevel) =>
+  e.maxLevel > 1 || level > 1 ? `${e.name} ${ROMAN[level] ?? level}` : e.name;
+
+/** Vanilla levels the server allows above Minecraft's max (Unbreaking V, Power VI). */
+export const MAX_VANILLA_LEVEL = 10;
+
+/** A book's anvil cost at `level`: the cost per level (book multiplier) times the level. */
+export const costAt = (e: Enchant, level = e.maxLevel) => Math.round((e.cost / e.maxLevel) * level);
 
 /** A book holds anything; any other item takes what lists it (or "All"). */
 export const fits = (e: Enchant, item: Item) =>

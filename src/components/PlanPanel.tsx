@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { type Objective, solve, xpFor } from "../lib/anvil";
 import { LIMITS } from "../lib/data";
-import { type Enchant, fullName, type Item } from "../lib/rules";
+import { costAt, type Enchant, fullName, type Item, MAX_VANILLA_LEVEL } from "../lib/rules";
 import { Tap } from "../ui/motion";
 import { colors, fonts, typeColor } from "../ui/theme";
 import { icons } from "./icons";
@@ -18,19 +18,23 @@ type Props = {
   /** Prior anvil uses per enchantment id, for books made by combining books. */
   worked: Record<string, number>;
   onWork: (e: Enchant, uses: number) => void;
+  /** Chosen level per vanilla enchantment id, when it isn't Minecraft's max. */
+  levels: Record<string, number>;
+  onLevel: (e: Enchant, level: number) => void;
   onClear: () => void;
 };
 
-export function PlanPanel({ item, picked, options, onOptions, onRemove, worked, onWork, onClear }: Props) {
+export function PlanPanel({ item, picked, options, onOptions, onRemove, worked, onWork, levels, onLevel, onClear }: Props) {
   const isBook = item.id === "book";
   const bookUses = picked.map((e) => worked[e.id] ?? 0);
   const anyWorked = bookUses.some((u) => u > 0);
   const [plan, fresh] = useMemo(() => {
-    const run = (uses?: number[]) => solve(picked.map((e) => e.cost), isBook ? null : options.priorUses, options.maxStep, options.objective, uses);
+    const costs = picked.map((e) => costAt(e, levels[e.id]));
+    const run = (uses?: number[]) => solve(costs, isBook ? null : options.priorUses, options.maxStep, options.objective, uses);
     // `fresh` is the same plan with new books, to show what combined books cost.
     return [run(bookUses), anyWorked ? run() : null];
-  }, [picked, isBook, options, bookUses.join(), anyWorked]);
-  const label = (e: Enchant) => (worked[e.id] ? `${fullName(e)} ⚒` : fullName(e));
+  }, [picked, isBook, options, bookUses.join(), anyWorked, levels]);
+  const label = (e: Enchant) => fullName(e, levels[e.id]) + (worked[e.id] ? " ⚒" : "");
   const count = (t: Enchant["type"]) => picked.filter((e) => e.type === t).length;
   const n = picked.length;
   const slot = (mask: number) => {
@@ -62,10 +66,36 @@ export function PlanPanel({ item, picked, options, onOptions, onRemove, worked, 
           <View style={styles.chips}>
             {picked.map((e) => {
               const uses = worked[e.id] ?? 0;
+              const level = levels[e.id] ?? e.maxLevel;
+              const levelled = e.vanilla && e.maxLevel > 1;
               return (
                 <View key={e.id} style={[styles.pick, uses > 0 && styles.pickWorked]}>
-                  <Text style={[styles.pickName, { color: typeColor[e.type] }]}>{fullName(e)}</Text>
-                  <Text style={styles.pickCost}>+{e.cost}</Text>
+                  {levelled && (
+                    <Tap
+                      onPress={() => onLevel(e, level - 1)}
+                      disabled={level <= 1}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Lower ${e.name} to level ${level - 1}`}
+                      style={[styles.x, level <= 1 && styles.off]}
+                      hoverStyle={styles.xHover}
+                    >
+                      <Text style={styles.pickX}>−</Text>
+                    </Tap>
+                  )}
+                  <Text style={[styles.pickName, { color: level > e.maxLevel ? colors.accent : typeColor[e.type] }]}>{fullName(e, level)}</Text>
+                  {levelled && (
+                    <Tap
+                      onPress={() => onLevel(e, level + 1)}
+                      disabled={level >= MAX_VANILLA_LEVEL}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Raise ${e.name} to level ${level + 1}`}
+                      style={[styles.x, level >= MAX_VANILLA_LEVEL && styles.off]}
+                      hoverStyle={styles.xHover}
+                    >
+                      <Text style={styles.pickX}>+</Text>
+                    </Tap>
+                  )}
+                  <Text style={styles.pickCost}>+{costAt(e, level)}</Text>
                   <Tap
                     onPress={() => onWork(e, (uses + 1) % 4)}
                     accessibilityRole="button"
@@ -84,6 +114,8 @@ export function PlanPanel({ item, picked, options, onOptions, onRemove, worked, 
           </View>
           <Text style={styles.hint}>
             Made a book by combining two in an anvil (like two Ignis Fury I into II)? Tap its ⚒ once per anvil use: combined books cost more to apply.
+            {picked.some((e) => e.vanilla && e.maxLevel > 1) &&
+              " Vanilla books go above Minecraft's max with − and + (like Unbreaking V); each level adds its book cost again."}
           </Text>
         </>
       )}
@@ -252,6 +284,7 @@ const styles = StyleSheet.create({
   anvilTextOn: { color: "#ffd84a", fontFamily: fonts.pixel },
   x: { paddingHorizontal: 5, paddingVertical: 2, borderRadius: 3 },
   xHover: { backgroundColor: colors.line },
+  off: { opacity: 0.3 },
   options: { gap: 10, padding: 12, borderRadius: 6, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.panel },
   stepper: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" },
   stepperLabel: { color: colors.muted, fontFamily: fonts.body, fontSize: 13, flexShrink: 1 },

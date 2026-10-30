@@ -22,6 +22,7 @@ export default function App() {
   const [options, setOptions] = useState<PlanOptions>({ priorUses: 0, maxStep: 39, objective: "xp" });
   const [shown, setShown] = useState<Build | null>(null); // the build loaded, until it's changed
   const [worked, setWorked] = useState<Record<string, number>>({}); // prior anvil uses of combined books
+  const [levels, setLevels] = useState<Record<string, number>>({}); // vanilla levels other than Minecraft's max
   const item = ITEMS.find((i) => i.id === itemId) ?? ITEMS[0];
 
   const chooseItem = (id: string) => {
@@ -38,6 +39,7 @@ export default function App() {
     setItemId(b.item);
     setPicked(enchantsOf(b));
     setWorked({});
+    setLevels({});
     setOptions((o) => ({ ...o, priorUses: 0 }));
     setPage("planner");
     setShown(b);
@@ -46,14 +48,17 @@ export default function App() {
   const toggle = (e: Enchant) => {
     setPicked((p) => (p.some((x) => x.id === e.id) ? p.filter((x) => x.id !== e.id) : [...p, e]));
     setWorked(({ [e.id]: _, ...rest }) => rest);
+    setLevels(({ [e.id]: _, ...rest }) => rest);
     leaveBuild();
   };
   const clear = () => {
     setPicked([]);
     setWorked({});
+    setLevels({});
     leaveBuild();
   };
   const work = (e: Enchant, uses: number) => setWorked((w) => ({ ...w, [e.id]: uses }));
+  const level = (e: Enchant, lvl: number) => setLevels((l) => ({ ...l, [e.id]: lvl }));
 
   // A shared link (?build=<id>) opens the planner with that build loaded.
   useEffect(() => {
@@ -93,6 +98,8 @@ export default function App() {
       onRemove={toggle}
       worked={worked}
       onWork={work}
+      levels={levels}
+      onLevel={level}
       onClear={clear}
     />;
   const list = <EnchantList item={item} picked={picked} onToggle={toggle} />;
