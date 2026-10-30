@@ -11,13 +11,13 @@ import Animated, {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+// Ease-out cubic as a bezier: web layout animations only accept bezier (or a few named) easings.
+const EASE_OUT = Easing.bezier(0.33, 1, 0.68, 1);
+
 // Built-in presets only: on the web, Reanimated pins elements with a custom Keyframe entering
 // animation to `position: absolute` once it ends, which takes them out of the layout.
 const entry = (delay: number, rise: boolean) =>
-  (rise ? FadeInDown.duration(320) : Fade.duration(220))
-    .delay(delay)
-    .easing(Easing.out(Easing.cubic))
-    .reduceMotion(ReduceMotion.System);
+  (rise ? FadeInDown.duration(320) : Fade.duration(220)).delay(delay).easing(EASE_OUT).reduceMotion(ReduceMotion.System);
 
 /**
  * Fades its content in when mounted, rising into place unless `rise` is false.

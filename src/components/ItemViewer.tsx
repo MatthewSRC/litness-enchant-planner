@@ -2,6 +2,8 @@ import { Group, Mesh, Scene, Spin } from "@apricotjs/react-native";
 import { useTexture } from "@apricotjs/react-native/model";
 import { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
+import { Easing, useSharedValue, withTiming } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import { float, rotateUV, texture, time, uv, vec2 } from "three/tsl";
 import * as THREE from "three/webgpu";
 import sprites from "../data/sprites.json";
@@ -40,8 +42,37 @@ function Item({ id, enchanted }: { id: string; enchanted: boolean }) {
   );
 }
 
+// Scale is never exactly 0: three.js can't invert a zero-scale matrix.
+const HIDDEN = 0.001;
+
+/**
+ * Swaps items with a scale-out / scale-in instead of a cut. Reanimated's entering and exiting
+ * only animate views, so a shared value drives the 3D group's scale instead.
+ */
+function SwappingItem({ itemId, enchanted, ready }: { itemId: string; enchanted: boolean; ready: boolean }) {
+  const [shown, setShown] = useState(itemId);
+  const scale = useSharedValue(HIDDEN);
+  // Grow in once the scene draws, and again after every swap.
+  useEffect(() => {
+    if (ready) scale.value = withTiming(1, { duration: 420, easing: Easing.out(Easing.cubic) });
+  }, [ready, shown, scale]);
+  // Shrink the old item away, then show the new one.
+  useEffect(() => {
+    if (itemId === shown) return;
+    scale.value = withTiming(HIDDEN, { duration: 180, easing: Easing.in(Easing.cubic) }, (finished) => {
+      if (finished) scheduleOnRN(setShown, itemId);
+    });
+  }, [itemId, shown, scale]);
+  return (
+    <Group scale={scale}>
+      <Item id={shown} enchanted={enchanted} />
+    </Group>
+  );
+}
+
 export function ItemViewer({ itemId, enchanted }: { itemId: string; enchanted: boolean }) {
   const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(false);
   if (failed)
     return (
       <View style={styles.fallback}>
@@ -58,6 +89,7 @@ export function ItemViewer({ itemId, enchanted }: { itemId: string; enchanted: b
       background={colors.panel}
       camera={{ position: [0, 0.25, 3.4], fov: 35 }}
       onError={() => setFailed(true)}
+      onReady={() => setReady(true)}
       // The flat icon covers the canvas until the first 3D frame (blank white while shaders compile).
       loading={
         <View style={styles.loading}>
@@ -67,7 +99,7 @@ export function ItemViewer({ itemId, enchanted }: { itemId: string; enchanted: b
     >
       <Group rotation={[0.12, 0, 0]}>
         <Spin speed={0.9}>
-          <Item id={itemId} enchanted={enchanted} />
+          <SwappingItem itemId={itemId} enchanted={enchanted} ready={ready} />
         </Spin>
       </Group>
     </Scene>
